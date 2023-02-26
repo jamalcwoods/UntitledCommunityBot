@@ -163,7 +163,7 @@ setInterval(() => {
         for(serverID in servers){
             let server = servers[serverID]
             if(server.qotd && server.qotd.active){
-                if(now.getHours() > parseInt(server.qotd.time)){
+                if(now.getHours() >= parseInt(server.qotd.time)){
                     if(!server.qotd.fired && client.channels.cache.get(server.qotd.channel) != undefined){
                         client.channels.fetch(server.qotd.channel).then(channel =>{
                             console.log(channel)
@@ -192,7 +192,7 @@ setInterval(() => {
             }
 
             if(server.quote && server.quote.active){
-                if(now.getHours() > parseInt(server.quote.time)){
+                if(now.getHours() >= parseInt(server.quote.time)){
                     if(!server.quote.fired && client.channels.cache.get(server.quote.channel) != undefined){
                         client.channels.fetch(server.quote.channel).then(channel =>{
                             const embed = new EmbedBuilder;
