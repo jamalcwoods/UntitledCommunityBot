@@ -41,7 +41,7 @@ module.exports = {
                     { name: '9:00 AM (EST)', value: '9' },
                     { name: '10:00 AM (EST)', value: '10' },
                     { name: '11:00 AM (EST)', value: '11' },
-                    { name: '12:00 AM (EST)', value: '12' },
+                    { name: '12:00 PM (EST)', value: '12' },
                     { name: '1:00 PM (EST)', value: '13' },
                     { name: '2:00 PM (EST)', value: '14' },
                     { name: '3:00 PM (EST)', value: '15' },
@@ -103,7 +103,8 @@ module.exports = {
                         channel:"0",
                         time:-1,
                         next:getQuote(null),
-                        fired:false
+                        fired:false,
+                        active:true
                     }
                 }
             }
@@ -150,7 +151,10 @@ module.exports = {
                     )
                     break;
                 case "custom":
-                    serverData.quote.next = interaction.options["_hoistedOptions"][0].value
+                    serverData.quote.next = {
+                        text:interaction.options["_hoistedOptions"][0].value,
+                        author:interaction.options["_hoistedOptions"][1].value
+                    }
                     embed.addFields(
                         { name: 'Quote Set', value: "The next quote will be: " + serverData.quote.next.text + (serverData.quote.next.author == null ? "" : "\n-" + serverData.quote.next.author) }
                     )

@@ -1,6 +1,6 @@
 const { token } = require("./private/credentials.json");
 const fs = require('fs');
-const { getQOTD, timeVal } = require('./tools.js')
+const { getQOTD, timeVal, getQuote } = require('./tools.js')
 const { Client, GatewayIntentBits, Collection, EmbedBuilder} = require('discord.js');
 const { getServerDBData, updatePlayerDBData, updateServerDBData } = require('./firebaseTools.js')
 const client = new Client({
@@ -198,7 +198,7 @@ setInterval(() => {
                             const embed = new EmbedBuilder;
 
                             embed.addFields(
-                                { name: 'Daily Quote', value: serverData.quote.next.text + (serverData.quote.next.author == null ? "" : "\n-" + serverData.quote.next.author) }
+                                { name: 'Daily Quote', value: server.quote.next.text + (server.quote.next.author == null ? "" : "\n-" + server.quote.next.author) }
                             )
 
                             channel.send({
@@ -207,15 +207,15 @@ setInterval(() => {
                                 ephemeral:false
                             })
 
-                            server.quote.next = getQOTD(server.quote.next)
+                            server.quote.next = getQuote(server.quote.next)
                             server.quote.fired = true
 
-                            updateServerDBData(serverID,"qotd",server.quote)
+                            updateServerDBData(serverID,"quote",server.quote)
                         })
                     }
                 } else {
                     server.quote.fired = false
-                    updateServerDBData(serverID,"qotd",server.quote)
+                    updateServerDBData(serverID,"quote",server.quote)
                 }
             }            
         }

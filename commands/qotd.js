@@ -41,7 +41,7 @@ module.exports = {
                     { name: '9:00 AM (EST)', value: '9' },
                     { name: '10:00 AM (EST)', value: '10' },
                     { name: '11:00 AM (EST)', value: '11' },
-                    { name: '12:00 AM (EST)', value: '12' },
+                    { name: '12:00 PM (EST)', value: '12' },
                     { name: '1:00 PM (EST)', value: '13' },
                     { name: '2:00 PM (EST)', value: '14' },
                     { name: '3:00 PM (EST)', value: '15' },
