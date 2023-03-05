@@ -118,7 +118,6 @@ client.on('interactionCreate', async interaction => {
             const component = client.components.get(componenetVals[0])
             let sessionID = componenetVals[1]
             let args = ""
-            console.log(componenetVals)
             if(componenetVals[2]){
                 args = componenetVals[2].split("|")
             }
@@ -159,6 +158,7 @@ client.on('interactionCreate', async interaction => {
 
 setInterval(() => {
     let now = new Date();
+    console.log(now.getHours())
     getServerDBData("",function(servers){
         for(serverID in servers){
             let server = servers[serverID]
@@ -166,7 +166,6 @@ setInterval(() => {
                 if(now.getHours() >= parseInt(server.qotd.time)){
                     if(!server.qotd.fired && client.channels.cache.get(server.qotd.channel) != undefined){
                         client.channels.fetch(server.qotd.channel).then(channel =>{
-                            console.log(channel)
                             const embed = new EmbedBuilder;
 
                             embed.addFields(
