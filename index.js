@@ -130,7 +130,12 @@ client.on('interactionCreate', async interaction => {
                 }
                 componentConfig.session = getSessionByID(sessionID)
                 componentConfig.client = client
-                component.execute(interaction,componentConfig,processResult)
+                console.log(sessionID,componentConfig.session.id)
+                if(parseInt(sessionID) == componentConfig.session.id){
+                    component.execute(interaction,componentConfig,processResult)
+                } else {
+                    await interaction.reply({ content: 'You are not in the session for this component!', ephemeral: true });
+                }
             } catch (error){
                 console.error(error)
                 await interaction.reply({ content: 'There was an error interacting with this component!', ephemeral: true });
@@ -149,6 +154,7 @@ client.on('interactionCreate', async interaction => {
                         session: getUserSession(interaction.user),
                         client:client
                     };
+                    console.log(command)
                     command.execute(interaction,commandConfig,processResult)
                 })
             } catch (error) {

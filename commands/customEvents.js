@@ -57,31 +57,39 @@ module.exports = {
             let updates = []
             switch(interaction.options["_subcommand"]){
                 case "menu":
-                    let newSession = {
-                        id: Math.floor(Math.random() * 10000),
-                        guildID:interaction.guild.id,
-                        users:[interaction.user.id],
-                        session_data:{
-                            mode:"selection",
-                            selected:-1,
-                            selectedAttribute:0,
-                            guildData:serverData
-                        },
-                        interactionMessage:null
-                    }
-        
-                    interaction.reply({
-                        content:" ",
-                        embeds:populateEventCustomizationWindow(newSession),
-                        components:populateEventCustomizationControls(newSession),
-                        fetchReply: true
-                    }).then((message) =>{
-                        newSession.session_data.m_id = message.id
-                        newSession.session_data.c_id = message.channelId
-                        callback({
-                            addSession:newSession
+                    if(session == null){
+                        let newSession = {
+                            id: Math.floor(Math.random() * 10000),
+                            guildID:interaction.guild.id,
+                            users:[interaction.user.id],
+                            session_data:{
+                                mode:"selection",
+                                selected:-1,
+                                selectedAttribute:0,
+                                guildData:serverData
+                            },
+                            interactionMessage:null
+                        }
+            
+                        interaction.reply({
+                            content:" ",
+                            embeds:populateEventCustomizationWindow(newSession),
+                            components:populateEventCustomizationControls(newSession),
+                            fetchReply: true
+                        }).then((message) =>{
+                            newSession.session_data.m_id = message.id
+                            newSession.session_data.c_id = message.channelId
+                            callback({
+                                addSession:newSession
+                            })
                         })
-                    })
+                        
+                    } else {
+                        interaction.reply({
+                            content:"You cannot use this command while in a session",
+                            ephemeral: true
+                        })
+                    }
                     break;
 
                 case "set-title":
