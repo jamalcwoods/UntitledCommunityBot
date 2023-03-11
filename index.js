@@ -110,7 +110,6 @@ function processResult(result){
     if(result.updateSession){
         updateSession(result.updateSession)
     }
-    //fs.writeFile("sessions.json", JSON.stringify(sessions, null, 4),function(){})
 }
 
 client.on('interactionCreate', async interaction => {  
@@ -152,9 +151,8 @@ client.on('interactionCreate', async interaction => {
                     let commandConfig = {
                         server: serverData,
                         session: getUserSession(interaction.user),
-                        client:client
+                        client: client
                     };
-                    console.log(command)
                     command.execute(interaction,commandConfig,processResult)
                 })
             } catch (error) {
@@ -233,9 +231,9 @@ setInterval(() => {
                     if(server.custom[i].active){
                         if(now.getHours() >= parseInt(server.custom[i].time) && server.custom[i].days.includes(now.getDay())){
                             if(!server.custom[i].fired && client.channels.cache.get(server.custom[i].channel) != undefined){
-                                let text = ""
+                                let msg;
                                 if(server.custom[i].repeat){
-                                    text = server.custom[i].textPool[Math.floor(Math.random() * server.custom[i].textPool.length)]
+                                    msg = server.custom[i].textPool[Math.floor(Math.random() * server.custom[i].textPool.length)]
                                 } else {
                                     let index = Math.floor(Math.random() * server.custom[i].textPool.length)
                                     if(!server.custom[i].used){
@@ -247,7 +245,7 @@ setInterval(() => {
                                     while(server.custom[i].used.includes(index)){
                                         index = Math.floor(Math.random() * server.custom[i].textPool.length)
                                     }
-                                    text = server.custom[i].textPool[index]
+                                    msg = server.custom[i].textPool[index]
                                     server.custom[i].used.push(index)
                                 }
 
@@ -256,8 +254,13 @@ setInterval(() => {
                                 client.channels.fetch(server.custom[i].channel).then(channel =>{
                                     const embed = new EmbedBuilder;
                                     embed.addFields(
-                                        { name: title, value: text}
+                                        { name: title, value: msg.text}
                                     )
+
+                                    if(msg.image != null){
+                                        embed.setImage(msg.image)
+                                    }
+
         
                                     channel.send({
                                         content:" ",

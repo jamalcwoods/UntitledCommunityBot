@@ -39,6 +39,34 @@ module.exports = {
     )
     .addSubcommand(subcommand =>
 		subcommand
+			.setName('remove-message')
+			.setDescription('Remove a message from the list of messages that can be sent for this event')
+			.addIntegerOption(option =>
+                option
+                .setName('messageslot') 
+                .setDescription("slot number of the message to remove")
+                .setRequired(true)
+            )
+    )
+    .addSubcommand(subcommand =>
+		subcommand
+			.setName('add-message-image')
+			.setDescription('Add an image to a message in the list of messages that can be sent for this event')
+			.addIntegerOption(option =>
+                option
+                .setName('messageslot') 
+                .setDescription("slot number of the message the image will be added to")
+                .setRequired(true)
+            )
+            .addStringOption(option =>
+                option
+                .setName('messageimage') 
+                .setDescription("url for the image that will be attached to the message")
+                .setRequired(true)
+            )   
+    )
+    .addSubcommand(subcommand =>
+		subcommand
 			.setName('channel')
 			.setDescription('Set a channel for the currently selected custom message to be sent to')
 			.addChannelOption(option =>
@@ -70,7 +98,6 @@ module.exports = {
                             },
                             interactionMessage:null
                         }
-            
                         interaction.reply({
                             content:" ",
                             embeds:populateEventCustomizationWindow(newSession),
@@ -83,7 +110,6 @@ module.exports = {
                                 addSession:newSession
                             })
                         })
-                        
                     } else {
                         interaction.reply({
                             content:"You cannot use this command while in a session",
@@ -135,14 +161,76 @@ module.exports = {
                     
                     break;
 
+                case 'add-message-image':
+                    if(session != null && session.session_data.mode == "editing"){
+                        let messageIndex = interaction.options["_hoistedOptions"][0].value;
+                        let imageURL = interaction.options["_hoistedOptions"][1].value;
+                        
+                        if(serverData.custom[session.session_data.selected].textPool[messageIndex - 1]) {
+
+                            serverData.custom[session.session_data.selected].textPool[messageIndex - 1].image = imageURL
+                            
+                            updates.push({
+                                id:interaction.guild.id,
+                                path:"custom",
+                                value:serverData.custom
+                            })
+    
+                            client.channels.fetch(session.session_data.c_id).then(channel => {
+                                channel.messages.fetch(session.session_data.m_id).then(message => {
+                                    
+                                    session.session_data.guildData = serverData
+    
+                                    message.edit({
+                                        content:" ",
+                                        embeds:populateEventCustomizationWindow(session),
+                                        components:populateEventCustomizationControls(session)
+                                    })
+    
+                                    interaction.reply({
+                                        content:"The message:\n\n" + serverData.custom[session.session_data.selected].textPool[messageIndex - 1].text + "\n\nwill now display the following image alongside it:\n" + imageURL,
+                                        ephemeral: true
+                                    })
+    
+                                    callback({
+                                        updateSession:session,
+                                        updateServer:updates
+                                    })
+                                })
+                            })
+                        } else {
+                            interaction.reply({
+                                content:"No message found in slot #" + messageIndex + " of this events message list",
+                                ephemeral: true
+                            })
+                        }
+                        
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
+                    break;
+
                 case 'add-message':
                     if(session != null && session.session_data.mode == "editing"){
                         let newMessage = interaction.options["_hoistedOptions"][0].value;
                         
                         if(serverData.custom[session.session_data.selected].textPool) {
-                            serverData.custom[session.session_data.selected].textPool.push(newMessage)
+                            serverData.custom[session.session_data.selected].textPool.push(
+                                {
+                                    text:newMessage,
+                                    image:null
+                                }
+                            )
                         } else {
-                            serverData.custom[session.session_data.selected].textPool = [newMessage]
+                            serverData.custom[session.session_data.selected].textPool = [
+                                {
+                                    text:newMessage,
+                                    image:null
+                                }
+                            ]
                         }
                         
                         updates.push({

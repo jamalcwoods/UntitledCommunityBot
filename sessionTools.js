@@ -162,24 +162,35 @@ module.exports = {
                         text += "\n" + days[event.days[day]]
                     }
                 }
+                let messageText = ""
                 if(event.repeat){
-                    text += "\n\nMessages for this event will randomly be chosen and may repeat"
+                    messageText += "\n\nMessages for this event will randomly be chosen and may repeat"
                 } else {
-                    text += "\n\nMessages for this event will only repeat once every message has been sent"
+                    messageText += "\n\nMessages for this event will only repeat once every message has been sent"
                 }
                 if(event.textPool){
-                    text += "\nMessage that will be sent:\n\n"
+                    messageText += "\nMessage that will be sent:\n\n"
                     for(i in event.textPool){
                         let msg = event.textPool[i]
-                        text += "Message #" +(parseInt(i)+1) + ": " + msg + "\n"
+                        messageText += "Message #" +(parseInt(i)+1) + ": " + msg.text + "\n"
+                        if(msg.image){
+                            messageText += "Image Link: " + msg.image + "\n\n"
+                        } else {
+                            messageText += "\n"
+                        }
                     }
                 } else {
-                    text += "\nNo messages in this events message list, add more using `/customevent add-message`"
+                    messageText += "\nNo messages in this events message list, add more using `/customevent add-message`"
                 }
         
                 embed.addFields({
                     name:"Editing Event: " + event.title,
                     value:text
+                })
+
+                embed.addFields({
+                    name:"Messages",
+                    value:messageText
                 })
                 break;
         }
