@@ -76,6 +76,11 @@ module.exports = {
 			    .setDescription('Enter a custom question')
                 .setRequired(true)
             )
+    )
+    .addSubcommand(subcommand =>
+		subcommand
+			.setName('toggle')
+			.setDescription('Turn the Question of the Day system off/on')
     ),
     async execute(interaction,config,callback) {
         getServerDBData(interaction.guild.id,function(serverData){
@@ -117,12 +122,17 @@ module.exports = {
                     break;
 
                 case "view":
-                    let text = "The next question of the day will be:\n\n" + serverData.qotd.next + "\n\nYou may reroll the question using the command `/qotd reroll`\n"
-                    if(serverData.qotd.time != -1){
-                        text += "\nThis question will be sent at " + timeVal(serverData.qotd.time)
-                    } 
-                    if(serverData.qotd.channel != "0"){
-                        text += "\nThis question will be sent in <#" + serverData.qotd.channel + ">"
+                    let text;
+                    if(serverData.qotd.active){
+                        text = "The next question of the day will be:\n\n" + serverData.qotd.next + "\n\nYou may reroll the question using the command `/qotd reroll`\n"
+                        if(serverData.qotd.time != -1){
+                            text += "\nThis question will be sent at " + timeVal(serverData.qotd.time)
+                        } 
+                        if(serverData.qotd.channel != "0"){
+                            text += "\nThis question will be sent in <#" + serverData.qotd.channel + ">"
+                        }
+                    } else {
+                        text = "The Question of the Day System is currently off, turn it on using `/qotd toggle`"
                     }
                     embed.addFields(
                         { name: 'Upcoming QOTD', value: text }
@@ -138,6 +148,12 @@ module.exports = {
                     serverData.qotd.next = interaction.options["_hoistedOptions"][0].value
                     embed.addFields(
                         { name: 'QOTD Question Set', value: "The next question will be: " + serverData.qotd.next }
+                    )
+                    break;
+                case "toggle": 
+                    serverData.qotd.active = !serverData.qotd.active
+                    embed.addFields(
+                        { name: 'QOTD Toggled', value: "The Question of the Day system has been turned " + (serverData.qotd.active ? "on" : "off") }
                     )
                     break;
             }

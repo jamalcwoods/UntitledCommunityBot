@@ -1,1 +1,89 @@
-[]
+[
+    {
+        "id": 3009,
+        "guildID": "298249552752803860",
+        "users": [
+            "163809334852190208"
+        ],
+        "session_data": {
+            "mode": "selection",
+            "selected": -1,
+            "selectedAttribute": 0,
+            "guildData": {
+                "custom": [
+                    {
+                        "active": false,
+                        "days": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "fired": false,
+                        "textPool": [
+                            "Default Text Entry"
+                        ],
+                        "time": 17,
+                        "title": "New Event"
+                    },
+                    {
+                        "active": false,
+                        "days": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "fired": false,
+                        "textPool": [
+                            "Default Text Entry"
+                        ],
+                        "time": 17,
+                        "title": "New Event"
+                    },
+                    {
+                        "active": false,
+                        "days": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "fired": false,
+                        "textPool": [
+                            "Default Text Entry"
+                        ],
+                        "time": 17,
+                        "title": "New Event"
+                    }
+                ],
+                "qotd": {
+                    "active": true,
+                    "channel": "298249552752803860",
+                    "fired": true,
+                    "next": "What's the strangest situation you ever found yourself in?",
+                    "time": "3"
+                },
+                "quote": {
+                    "active": true,
+                    "channel": "308776218692419584",
+                    "fired": true,
+                    "next": {
+                        "author": "Tony Robbins",
+                        "text": "Whatever happens, take responsibility."
+                    },
+                    "time": "3"
+                }
+            }
+        }
+    }
+]

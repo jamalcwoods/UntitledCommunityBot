@@ -109,6 +109,7 @@ function processResult(result){
     if(result.updateSession){
         updateSession(result.updateSession)
     }
+    //fs.writeFile("sessions.json", JSON.stringify(sessions, null, 4),function(){})
 }
 
 client.on('interactionCreate', async interaction => {  
@@ -143,7 +144,9 @@ client.on('interactionCreate', async interaction => {
             try {
                 getServerDBData(interaction.guildId,function(serverData){
                     let commandConfig = {
-                        server: serverData
+                        server: serverData,
+                        session: getUserSession(interaction.user),
+                        client:client
                     };
                     command.execute(interaction,commandConfig,processResult)
                 })
@@ -153,12 +156,13 @@ client.on('interactionCreate', async interaction => {
             }
             break;  
     }
-    fs.writeFile("sessions.json", JSON.stringify(sessions, null, 4),function(){})
 });
 
 setInterval(() => {
     let now = new Date();
-    console.log(now.getHours())
+    let utcOffset = now.getTimezoneOffset()
+    now.setMinutes(now.getMinutes() + utcOffset)
+    console.log("Hour: " + now.getHours() + "\nDay: " + now.getDay())
     getServerDBData("",function(servers){
         for(serverID in servers){
             let server = servers[serverID]
@@ -220,6 +224,6 @@ setInterval(() => {
         }
     })
     lastHour = now.getHours()
-}, 10000)
+}, 5000)
 
 client.login(token);

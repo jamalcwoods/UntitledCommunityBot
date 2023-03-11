@@ -82,6 +82,11 @@ module.exports = {
 			    .setDescription('Enter name of the author of the custom quote')
                 .setRequired(true)
             )
+    )
+    .addSubcommand(subcommand =>
+		subcommand
+			.setName('toggle')
+			.setDescription('Turn the Motivational Quote system off/on')
     ),
     async execute(interaction,config,callback) {
         getServerDBData(interaction.guild.id,function(serverData){
@@ -133,12 +138,17 @@ module.exports = {
                     break;
 
                 case "view":
-                    let text = "The next Motivational Quote will be:\n\n" + serverData.quote.next.text + (serverData.quote.next.author == null ? "" : "\n-" + serverData.quote.next.author) + "\n\nYou may reroll the quote using the command `/quote reroll`\n"
-                    if(serverData.quote.time != -1){
-                        text += "\nThis quote will be sent at " + timeVal(serverData.quote.time)
-                    } 
-                    if(serverData.quote.channel != "0"){
-                        text += "\nThis quote will be sent in <#" + serverData.quote.channel + ">"
+                    let text;
+                    if(serverData.quote.active){
+                        text = "The next Motivational Quote will be:\n\n" + serverData.quote.next.text + (serverData.quote.next.author == null ? "" : "\n-" + serverData.quote.next.author) + "\n\nYou may reroll the quote using the command `/quote reroll`\n"
+                        if(serverData.quote.time != -1){
+                            text += "\nThis quote will be sent at " + timeVal(serverData.quote.time)
+                        } 
+                        if(serverData.quote.channel != "0"){
+                            text += "\nThis quote will be sent in <#" + serverData.quote.channel + ">"
+                        }
+                    } else {
+                        text = "The Motivational Quote System is currently off, turn it on using `/quote toggle`"
                     }
                     embed.addFields(
                         { name: 'Upcoming Quote', value: text }
@@ -157,6 +167,12 @@ module.exports = {
                     }
                     embed.addFields(
                         { name: 'Quote Set', value: "The next quote will be: " + serverData.quote.next.text + (serverData.quote.next.author == null ? "" : "\n-" + serverData.quote.next.author) }
+                    )
+                    break;
+                case "toggle": 
+                    serverData.quote.active = !serverData.quote.active
+                    embed.addFields(
+                        { name: 'Quote Toggled', value: "The Motivational Quote system has been turned " + (serverData.quote.active ? "on" : "off") }
                     )
                     break;
             }
