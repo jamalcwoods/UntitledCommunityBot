@@ -24,11 +24,6 @@ module.exports = {
     },
     timeVal(val){
         return [
-            '7:00 PM (EST)',
-            '8:00 PM (EST)',
-            '9:00 PM (EST)',
-            '10:00 PM (EST)',
-            '11:00 PM (EST)',
             '12:00 AM (EST)',
             '1:00 AM (EST)',
             '2:00 AM (EST)',
@@ -48,6 +43,39 @@ module.exports = {
             '4:00 PM (EST)',
             '5:00 PM (EST)',
             '6:00 PM (EST)',
+            '7:00 PM (EST)',
+            '8:00 PM (EST)',
+            '9:00 PM (EST)',
+            '10:00 PM (EST)',
+            '11:00 PM (EST)'
         ][val]
+    },
+    getTimes(){
+        return [
+            '12:00 AM (EST)',
+            '1:00 AM (EST)',
+            '2:00 AM (EST)',
+            '3:00 AM (EST)',
+            '4:00 AM (EST)',
+            '5:00 AM (EST)',
+            '6:00 AM (EST)',
+            '7:00 AM (EST)',
+            '8:00 AM (EST)',
+            '9:00 AM (EST)',
+            '10:00 AM (EST)',
+            '11:00 AM (EST)',
+            '12:00 AM (EST)',
+            '1:00 PM (EST)',
+            '2:00 PM (EST)',
+            '3:00 PM (EST)',
+            '4:00 PM (EST)',
+            '5:00 PM (EST)',
+            '6:00 PM (EST)',
+            '7:00 PM (EST)',
+            '8:00 PM (EST)',
+            '9:00 PM (EST)',
+            '10:00 PM (EST)',
+            '11:00 PM (EST)'
+        ]
     }
 }

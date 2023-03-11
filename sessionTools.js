@@ -1,5 +1,5 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, StringSelectMenuBuilder} = require('discord.js')
-const { timeVal } = require('./tools.js')
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, StringSelectMenuBuilder, time} = require('discord.js')
+const { timeVal, getTimes } = require('./tools.js')
 
 let days = [
     "Sunday",
@@ -21,7 +21,7 @@ module.exports = {
                     .addComponents(
                             new ButtonBuilder()
                             .setCustomId('closeWindow_' + session.id)
-                            .setLabel('Cancel')
+                            .setLabel('Finish Editing')
                             .setStyle('Danger'),
                             new ButtonBuilder()
                             .setCustomId('createCustomEvent_' + session.id)
@@ -77,6 +77,10 @@ module.exports = {
                     .setLabel('Remove Event')
                     .setStyle('Danger'),
                     new ButtonBuilder()
+                    .setCustomId('toggleRepeat_' + session.id)
+                    .setLabel(event.repeat ? "Disable Repeating Messages" : "Allow Repeating Messages")
+                    .setStyle('Primary'),
+                    new ButtonBuilder()
                     .setCustomId('toggleEvent_' + session.id)
                     .setLabel(event.active ? "Disable Event" : "Activate Event")
                     .setStyle(event.active ? 'Danger' : 'Success'),
@@ -84,104 +88,15 @@ module.exports = {
 
 
                     let daySelections = []
-                    let timeSelections = [
-                        { 
-                            label: '12:00 PM (EST)',
-                            description: 'Set this event to trigger at 12:00 PM (EST)',
-                             value: '17' },
-                        { 
-                            label: '1:00 PM (EST)',
-                            description: 'Set this event to trigger at 1:00 PM (EST)', 
-                            value: '18' },
-                        { 
-                            label: '2:00 PM (EST)',
-                            description: 'Set this event to trigger at 2:00 PM (EST)', 
-                            value: '19' },
-                        { 
-                            label: '3:00 PM (EST)',
-                            description: 'Set this event to trigger at 3:00 PM (EST)', 
-                            value: '20' },
-                        { 
-                            label: '4:00 PM (EST)',
-                            description: 'Set this event to trigger at 4:00 PM (EST)', 
-                            value: '21' },
-                        { 
-                            label: '5:00 PM (EST)',
-                            description: 'Set this event to trigger at 5:00 PM (EST)', 
-                            value: '22' },
-                        { 
-                            label: '6:00 PM (EST)',
-                            description: 'Set this event to trigger at 6:00 PM (EST)', 
-                            value: '23' },
-                        { 
-                            label: '7:00 PM (EST)',
-                            description: 'Set this event to trigger at 7:00 PM (EST)', 
-                            value: '0' },
-                        { 
-                            label: '8:00 PM (EST)',
-                            description: 'Set this event to trigger at 8:00 PM (EST)', 
-                            value: '1' },
-                        { 
-                            label: '9:00 PM (EST)',
-                            description: 'Set this event to trigger at 9:00 PM (EST)', 
-                            value: '2' },
-                        { 
-                            label: '10:00 PM (EST)',
-                            description: 'Set this event to trigger at 10:00 PM (EST)',
-                             value: '3' },
-                        { 
-                            label: '11:00 PM (EST)',
-                            description: 'Set this event to trigger at 11:00 PM (EST)',
-                             value: '4' },
-                        { 
-                            label: '12:00 AM (EST)',
-                            description: 'Set this event to trigger at 12:00 AM (EST)',
-                             value: '5' },
-                        { 
-                            label: '1:00 AM (EST)',
-                            description: 'Set this event to trigger at 1:00 AM (EST)', 
-                            value: '6' },
-                        { 
-                            label: '2:00 AM (EST)',
-                            description: 'Set this event to trigger at 2:00 AM (EST)', 
-                            value: '7' },
-                        { 
-                            label: '3:00 AM (EST)',
-                            description: 'Set this event to trigger at 3:00 AM (EST)', 
-                            value: '8' },
-                        { 
-                            label: '4:00 AM (EST)',
-                            description: 'Set this event to trigger at 4:00 AM (EST)', 
-                            value: '9' },
-                        { 
-                            label: '5:00 AM (EST)',
-                            description: 'Set this event to trigger at 5:00 AM (EST)', 
-                            value: '10' },
-                        { 
-                            label: '6:00 AM (EST)',
-                            description: 'Set this event to trigger at 6:00 AM (EST)', 
-                            value: '11' },
-                        { 
-                            label: '7:00 AM (EST)',
-                            description: 'Set this event to trigger at 7:00 AM (EST)', 
-                            value: '12' },
-                        { 
-                            label: '8:00 AM (EST)',
-                            description: 'Set this event to trigger at 8:00 AM (EST)', 
-                            value: '13' },
-                        { 
-                            label: '9:00 AM (EST)',
-                            description: 'Set this event to trigger at 9:00 AM (EST)', 
-                            value: '14' },
-                        { 
-                            label: '10:00 AM (EST)',
-                            description: 'Set this event to trigger at 10:00 AM (EST)',
-                             value: '15' },
-                        { 
-                            label: '11:00 AM (EST)',
-                            description: 'Set this event to trigger at 11:00 AM (EST)',
-                             value: '16' }
-                    ]
+                    let timeSelections = []
+                    let times = getTimes()
+                    for(var t = 0;t < times.length;t++){
+                        timeSelections.push({ 
+                            label: times[t],
+                            description: 'Set this event to trigger at ' + times[t],
+                             value: t.toString() 
+                        })
+                    }
 
                     if(!event.days){
                         event.days = []
@@ -237,7 +152,7 @@ module.exports = {
                 } else {
                     text += "This event will send messages to the <#" + event.channel +"> channel"
                 }
-                text += "\n" + (event.active? "This event is currently active" : "This event is currently inactive")
+                text += "\n\n" + (event.active? "This event is currently active" : "This event is currently inactive")
                 text += "\nThis event will trigger at " + timeVal(event.time)
                 if(event.days == undefined || event.days.length == 0){
                     text += "\nThis event is not set to trigger on any days"
@@ -247,14 +162,19 @@ module.exports = {
                         text += "\n" + days[event.days[day]]
                     }
                 }
+                if(event.repeat){
+                    text += "\n\nMessages for this event will randomly be chosen and may repeat"
+                } else {
+                    text += "\n\nMessages for this event will only repeat once every message has been sent"
+                }
                 if(event.textPool){
-                    text += "\n\nMessage that will be sent:\n\n"
+                    text += "\nMessage that will be sent:\n\n"
                     for(i in event.textPool){
                         let msg = event.textPool[i]
                         text += "Message #" +(parseInt(i)+1) + ": " + msg + "\n"
                     }
                 } else {
-                    text += "\n\nNo messages in this events message list, add more using `/customevent add-message`"
+                    text += "\nNo messages in this events message list, add more using `/customevent add-message`"
                 }
         
                 embed.addFields({

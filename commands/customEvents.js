@@ -85,81 +85,96 @@ module.exports = {
                     break;
 
                 case "set-title":
-                    let newTitle = interaction.options["_hoistedOptions"][0].value;
-                    
-                    serverData.custom[session.session_data.selected].title = newTitle
+                    if(session != null && session.session_data.mode == "editing"){
+                        let newTitle = interaction.options["_hoistedOptions"][0].value;
+                        
+                        serverData.custom[session.session_data.selected].title = newTitle
 
-                    updates.push({
-                        id:interaction.guild.id,
-                        path:"custom",
-                        value:serverData.custom
-                    })
+                        updates.push({
+                            id:interaction.guild.id,
+                            path:"custom",
+                            value:serverData.custom
+                        })
 
-                    client.channels.fetch(session.session_data.c_id).then(channel => {
-                        channel.messages.fetch(session.session_data.m_id).then(message => {
-                            
-                            session.session_data.guildData = serverData
+                        client.channels.fetch(session.session_data.c_id).then(channel => {
+                            channel.messages.fetch(session.session_data.m_id).then(message => {
+                                
+                                session.session_data.guildData = serverData
 
-                            message.edit({
-                                content:" ",
-                                embeds:populateEventCustomizationWindow(session),
-                                components:populateEventCustomizationControls(session)
-                            })
+                                message.edit({
+                                    content:" ",
+                                    embeds:populateEventCustomizationWindow(session),
+                                    components:populateEventCustomizationControls(session)
+                                })
 
-                            interaction.reply({
-                                content:"The selected event has been renamed to: " + newTitle,
-                                ephemeral: true
-                            })
+                                interaction.reply({
+                                    content:"The selected event has been renamed to: " + newTitle,
+                                    ephemeral: true
+                                })
 
-                            callback({
-                                updateSession:session,
-                                updateServer:updates
+                                callback({
+                                    updateSession:session,
+                                    updateServer:updates
+                                })
                             })
                         })
-                    })
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
                     
                     break;
 
                 case 'add-message':
-                    let newMessage = interaction.options["_hoistedOptions"][0].value;
-                    
-                    if(serverData.custom[session.session_data.selected].textPool) {
-                        serverData.custom[session.session_data.selected].textPool.push(newMessage)
-                    } else {
-                        serverData.custom[session.session_data.selected].textPool = [newMessage]
-                    }
-                    
-                    updates.push({
-                        id:interaction.guild.id,
-                        path:"custom",
-                        value:serverData.custom
-                    })
+                    if(session != null && session.session_data.mode == "editing"){
+                        let newMessage = interaction.options["_hoistedOptions"][0].value;
+                        
+                        if(serverData.custom[session.session_data.selected].textPool) {
+                            serverData.custom[session.session_data.selected].textPool.push(newMessage)
+                        } else {
+                            serverData.custom[session.session_data.selected].textPool = [newMessage]
+                        }
+                        
+                        updates.push({
+                            id:interaction.guild.id,
+                            path:"custom",
+                            value:serverData.custom
+                        })
 
-                    client.channels.fetch(session.session_data.c_id).then(channel => {
-                        channel.messages.fetch(session.session_data.m_id).then(message => {
-                            
-                            session.session_data.guildData = serverData
+                        client.channels.fetch(session.session_data.c_id).then(channel => {
+                            channel.messages.fetch(session.session_data.m_id).then(message => {
+                                
+                                session.session_data.guildData = serverData
 
-                            message.edit({
-                                content:" ",
-                                embeds:populateEventCustomizationWindow(session),
-                                components:populateEventCustomizationControls(session)
-                            })
+                                message.edit({
+                                    content:" ",
+                                    embeds:populateEventCustomizationWindow(session),
+                                    components:populateEventCustomizationControls(session)
+                                })
 
-                            interaction.reply({
-                                content:"The message:\n\n" + newMessage + "\n\nhas been added to the events message list",
-                                ephemeral: true
-                            })
+                                interaction.reply({
+                                    content:"The message:\n\n" + newMessage + "\n\nhas been added to the events message list",
+                                    ephemeral: true
+                                })
 
-                            callback({
-                                updateSession:session,
-                                updateServer:updates
+                                callback({
+                                    updateSession:session,
+                                    updateServer:updates
+                                })
                             })
                         })
-                    })
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
                     break;
 
                 case 'channel':
+                    if(session != null && session.session_data.mode == "editing"){
                         let channelID = interaction.options["_hoistedOptions"][0].value;
                         
                         serverData.custom[session.session_data.selected].channel = channelID
@@ -193,7 +208,13 @@ module.exports = {
                                 })
                             })
                         })
-                        break;
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
+                    break;
             }
             
         })

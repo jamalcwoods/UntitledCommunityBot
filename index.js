@@ -16,6 +16,7 @@ client.once('ready', () => {
 
 let lastHour;
 let sessions = []
+let ESTOffset = -300
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -161,8 +162,7 @@ client.on('interactionCreate', async interaction => {
 setInterval(() => {
     let now = new Date();
     let utcOffset = now.getTimezoneOffset()
-    now.setMinutes(now.getMinutes() + utcOffset)
-    console.log("Hour: " + now.getHours() + "\nDay: " + now.getDay())
+    //now.setMinutes(now.getMinutes() + utcOffset + ESTOffset)
     getServerDBData("",function(servers){
         for(serverID in servers){
             let server = servers[serverID]
@@ -220,7 +220,53 @@ setInterval(() => {
                     server.quote.fired = false
                     updateServerDBData(serverID,"quote",server.quote)
                 }
-            }            
+            }       
+            
+            if(server.custom){
+                for(var i = 0; i < server.custom.length;i++){
+                    if(server.custom[i].active){
+                        if(now.getHours() >= parseInt(server.custom[i].time) && server.custom[i].days.includes(now.getDay())){
+                            if(!server.custom[i].fired && client.channels.cache.get(server.custom[i].channel) != undefined){
+                                let text = ""
+                                if(server.custom[i].repeat){
+                                    text = server.custom[i].textPool[Math.floor(Math.random() * server.custom[i].textPool.length)]
+                                } else {
+                                    let index = Math.floor(Math.random() * server.custom[i].textPool.length)
+                                    if(!server.custom[i].used){
+                                        server.custom[i].used = []
+                                    }
+                                    if(server.custom[i].used.length == server.custom[i].textPool.length){
+                                        server.custom[i].used = []
+                                    }
+                                    while(server.custom[i].used.includes(index)){
+                                        index = Math.floor(Math.random() * server.custom[i].textPool.length)
+                                    }
+                                    text = server.custom[i].textPool[index]
+                                    server.custom[i].used.push(index)
+                                }
+
+                                let title = server.custom[i].title
+                                server.custom[i].fired = true
+                                client.channels.fetch(server.custom[i].channel).then(channel =>{
+                                    const embed = new EmbedBuilder;
+                                    embed.addFields(
+                                        { name: title, value: text}
+                                    )
+        
+                                    channel.send({
+                                        content:" ",
+                                        embeds:[embed],
+                                        ephemeral:false
+                                    })
+                                })
+                            }
+                        } else {
+                            server.custom[i].fired = false
+                        }
+                    }
+                }
+                updateServerDBData(serverID,"custom",server.custom)
+            }  
         }
     })
     lastHour = now.getHours()
