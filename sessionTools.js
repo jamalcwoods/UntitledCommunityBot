@@ -177,7 +177,7 @@ module.exports = {
                         let msg = event.textPool[i]
                         messageText += "Message Slot #" +(parseInt(i)+1) + ": " + msg.text + "\n"
                         if(msg.image){
-                            messageText += "Image Link: " + msg.image + "\n\n"
+                            messageText += "[Image Link](" + msg.image+ ")" + "\n\n"
                         } else {
                             messageText += "\n"
                         }
