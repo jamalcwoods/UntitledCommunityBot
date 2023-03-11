@@ -129,7 +129,6 @@ client.on('interactionCreate', async interaction => {
                 }
                 componentConfig.session = getSessionByID(sessionID)
                 componentConfig.client = client
-                console.log(sessionID,componentConfig.session.id)
                 if(parseInt(sessionID) == componentConfig.session.id){
                     component.execute(interaction,componentConfig,processResult)
                 } else {

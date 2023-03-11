@@ -213,6 +213,61 @@ module.exports = {
                     }
                     break;
 
+                case 'remove-message':
+                    if(session != null && session.session_data.mode == "editing"){
+                        let messageIndex = interaction.options["_hoistedOptions"][0].value;
+                        
+                        if(serverData.custom[session.session_data.selected].textPool[messageIndex - 1]) {
+
+                            let removedMessage = serverData.custom[session.session_data.selected].textPool[messageIndex - 1].text
+
+                            serverData.custom[session.session_data.selected].textPool.splice(messageIndex - 1,1)
+
+                            if(serverData.custom[session.session_data.selected].textPool == []){
+                                delete serverData.custom[session.session_data.selected].textPool
+                            }
+
+                            updates.push({
+                                id:interaction.guild.id,
+                                path:"custom",
+                                value:serverData.custom
+                            })
+    
+                            client.channels.fetch(session.session_data.c_id).then(channel => {
+                                channel.messages.fetch(session.session_data.m_id).then(message => {
+                                    
+                                    session.session_data.guildData = serverData
+    
+                                    message.edit({
+                                        content:" ",
+                                        embeds:populateEventCustomizationWindow(session),
+                                        components:populateEventCustomizationControls(session)
+                                    })
+    
+                                    interaction.reply({
+                                        content:"The message:\n\n" + removedMessage + "\n\nhas been removed",
+                                        ephemeral: true
+                                    })
+    
+                                    callback({
+                                        updateSession:session,
+                                        updateServer:updates
+                                    })
+                                })
+                            })
+                        } else {
+                            interaction.reply({
+                                content:"No message found in slot #" + messageIndex + " of this events message list",
+                                ephemeral: true
+                            })
+                        }
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
+                    break;
                 case 'add-message':
                     if(session != null && session.session_data.mode == "editing"){
                         let newMessage = interaction.options["_hoistedOptions"][0].value;

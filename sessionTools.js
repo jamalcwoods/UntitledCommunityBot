@@ -163,16 +163,19 @@ module.exports = {
                     }
                 }
                 let messageText = ""
+                
                 if(event.repeat){
                     messageText += "\n\nMessages for this event will randomly be chosen and may repeat"
                 } else {
                     messageText += "\n\nMessages for this event will only repeat once every message has been sent"
                 }
                 if(event.textPool){
-                    messageText += "\nMessage that will be sent:\n\n"
+                    messageText += "\nYou can remove messages with `/customevent remove-message`\n"
+                    messageText += "You can add images to messages with `/customevent add-message-image`\n"
+                    messageText += "\nMessages that will be sent:\n\n"
                     for(i in event.textPool){
                         let msg = event.textPool[i]
-                        messageText += "Message #" +(parseInt(i)+1) + ": " + msg.text + "\n"
+                        messageText += "Message Slot #" +(parseInt(i)+1) + ": " + msg.text + "\n"
                         if(msg.image){
                             messageText += "Image Link: " + msg.image + "\n\n"
                         } else {
