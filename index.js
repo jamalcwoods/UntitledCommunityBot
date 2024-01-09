@@ -144,6 +144,7 @@ client.on('interactionCreate', async interaction => {
 
             const command = client.commands.get(interaction.commandName);
 
+            console.log("command: " + interaction.commandName)
             if (!command) return;
             try {
                 getServerDBData(interaction.guildId,function(serverData){

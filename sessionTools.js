@@ -183,7 +183,7 @@ module.exports = {
                         }
                     }
                 } else {
-                    messageText += "\nNo messages in this events message list, add more using `/customevent add-message`"
+                    messageText += "\n\nNo messages in this events message list, add more using `/customevent add-message`"
                 }
         
                 embed.addFields({
