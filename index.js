@@ -166,7 +166,8 @@ client.on('interactionCreate', async interaction => {
 setInterval(() => {
     let now = new Date();
     let utcOffset = now.getTimezoneOffset()
-    //now.setMinutes(now.getMinutes() + utcOffset + ESTOffset)
+    now.setMinutes(now.getMinutes() + utcOffset + ESTOffset)
+    console.log(now.getHours())
     getServerDBData("",function(servers){
         for(serverID in servers){
             let server = servers[serverID]
