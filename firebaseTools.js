@@ -6,6 +6,14 @@ const app = initializeApp(firebase);
 const db = getDatabase()
 
 
+function updateServerDBData(serverID,path,data,callback){
+    set(ref(db, 'servers/' + serverID + "/" + path), data).then( () =>{
+        if(callback){
+            callback()
+        }
+    })
+}
+
 module.exports = {
     updatePlayerDBData(id,path,data,callback){
         set(ref(db, 'users/' + id + "/" + path), data);
@@ -27,7 +35,13 @@ module.exports = {
         get(ref(db, `servers/` + serverID)).then((snapshot) => {
             let data = snapshot.val();
             if(data == null){
-                callback(false)
+                let newServerData = {
+                    qotd:false,
+                    quote:false,
+                }
+                updateServerDBData(serverID,"",newServerData,function(){
+                    callback(newServerData)
+                })
             } else {
                 callback(data);
             }
@@ -37,10 +51,6 @@ module.exports = {
         set(ref(db, 'servers/'), servers);
     },
     updateServerDBData(serverID,path,data,callback){
-        set(ref(db, 'servers/' + serverID + "/" + path), data).then( () =>{
-            if(callback){
-                callback()
-            }
-        })
+        updateServerDBData(serverID,path,data,callback)
     }
 }

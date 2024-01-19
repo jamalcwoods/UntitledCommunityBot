@@ -6,6 +6,7 @@ module.exports = {
     },
     execute(interaction,componentConfig,callback){
         getServerDBData(interaction.guild.id,function(serverData){
+            console.log(serverData)
             let session = componentConfig.session
             if(session != null){
                 let newEvent = {
