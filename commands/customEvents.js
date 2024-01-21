@@ -28,6 +28,17 @@ module.exports = {
     )
     .addSubcommand(subcommand =>
 		subcommand
+			.setName('set-role')
+			.setDescription('Set the role that the event will mention')
+			.addRoleOption(option =>
+                option
+                .setName('role') 
+                .setDescription("New title of currently selected custom event")
+                .setRequired(true)
+            )  
+    )
+    .addSubcommand(subcommand =>
+		subcommand
 			.setName('add-message')
 			.setDescription('Add a message to the list of messages that can be sent for this event')
 			.addStringOption(option =>
@@ -84,6 +95,47 @@ module.exports = {
             let client = config.client
             let updates = []
             switch(interaction.options["_subcommand"]){
+                case "set-role":
+                    if(session != null && session.session_data.mode == "editing"){
+                        let setRole = interaction.options["_hoistedOptions"][0].value;
+
+                        serverData.custom[session.session_data.selected].role = setRole
+
+                        updates.push({
+                            id:interaction.guild.id,
+                            path:"custom",
+                            value:serverData.custom
+                        })
+
+                        client.channels.fetch(session.session_data.c_id).then(channel => {
+                            channel.messages.fetch(session.session_data.m_id).then(message => {
+                                
+                                session.session_data.guildData = serverData
+
+                                message.edit({
+                                    content:" ",
+                                    embeds:populateEventCustomizationWindow(session),
+                                    components:populateEventCustomizationControls(session)
+                                })
+
+                                interaction.reply({
+                                    content:"The selected event will now mention the <@&" + setRole + "> role",
+                                    ephemeral: true
+                                })
+
+                                callback({
+                                    updateSession:session,
+                                    updateServer:updates
+                                })
+                            })
+                        })
+                    } else {
+                        interaction.reply({
+                            content:"You must be editing an event to use this command",
+                            ephemeral: true
+                        })
+                    }
+                    break;
                 case "menu":
                     if(session == null){
                         let newSession = {
@@ -94,7 +146,8 @@ module.exports = {
                                 mode:"selection",
                                 selected:-1,
                                 selectedAttribute:0,
-                                guildData:serverData
+                                guildData:serverData,
+                                messagesPage:1
                             },
                             interactionMessage:null
                         }
@@ -117,7 +170,6 @@ module.exports = {
                         })
                     }
                     break;
-
                 case "set-title":
                     if(session != null && session.session_data.mode == "editing"){
                         let newTitle = interaction.options["_hoistedOptions"][0].value;
@@ -160,7 +212,6 @@ module.exports = {
                     }
                     
                     break;
-
                 case 'add-message-image':
                     if(session != null && session.session_data.mode == "editing"){
                         let messageIndex = interaction.options["_hoistedOptions"][0].value;
@@ -212,7 +263,6 @@ module.exports = {
                         })
                     }
                     break;
-
                 case 'remove-message':
                     if(session != null && session.session_data.mode == "editing"){
                         let messageIndex = interaction.options["_hoistedOptions"][0].value;
@@ -323,7 +373,6 @@ module.exports = {
                         })
                     }
                     break;
-
                 case 'channel':
                     if(session != null && session.session_data.mode == "editing"){
                         let channelID = interaction.options["_hoistedOptions"][0].value;

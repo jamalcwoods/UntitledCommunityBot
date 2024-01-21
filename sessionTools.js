@@ -123,7 +123,24 @@ module.exports = {
                         .setPlaceholder('Select a time for this event to trigger at')
                         .addOptions(timeSelections)
                 );
-                return [row2,row3,row1]
+                if(event.textPool && event.textPool.length > 5){
+                    let row4 = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                        .setCustomId('changeMessagePage_' + session.id + "_0")
+                        .setLabel('Previous Message Page')
+                        .setStyle('Primary')
+                        .setDisabled(session.session_data.messagesPage == 1),
+                        new ButtonBuilder()
+                        .setCustomId('changeMessagePage_' + session.id + "_1")
+                        .setLabel('Next Message Page')
+                        .setStyle('Primary')
+                        .setDisabled(session.session_data.messagesPage == Math.ceil(event.textPool.length/5))
+                    );
+                    return [row4,row2,row3,row1]
+                } else {
+                    return [row2,row3,row1]
+                }
         }
     },
     populateEventCustomizationWindow(session){
@@ -152,16 +169,25 @@ module.exports = {
                 } else {
                     text += "This event will send messages to the <#" + event.channel +"> channel"
                 }
-                text += "\n\n" + (event.active? "This event is currently active" : "This event is currently inactive")
-                text += "\nThis event will trigger at " + timeVal(event.time)
-                if(event.days == undefined || event.days.length == 0){
-                    text += "\nThis event is not set to trigger on any days"
+                if(event.role){
+                    text += "\nThis event will mention the <@&" + event.role +"> role"
                 } else {
-                    text += "\nThe days this event will trigger are:\n"
-                    for(day in event.days){
-                        text += "\n" + days[event.days[day]]
-                    }
+                    text += "\n\nYou can set a role for this event to mention by using `/customevent set-role`"
                 }
+                if(event.active){
+                    text += "\n\nThis event will trigger at " + timeVal(event.time)
+                    if(event.days == undefined || event.days.length == 0){
+                        text += "\nThis event is not set to trigger on any days"
+                    } else {
+                        text += "\nThe days this event will trigger are:\n"
+                        for(day in event.days){
+                            text += "\n" + days[event.days[day]]
+                        }
+                    }
+                } else {
+                    text += "\n\nThis event is currently inactive"
+                }
+                
                 let messageText = ""
                 
                 if(event.repeat){
@@ -172,14 +198,22 @@ module.exports = {
                 if(event.textPool){
                     messageText += "\nYou can remove messages with `/customevent remove-message`\n"
                     messageText += "You can add images to messages with `/customevent add-message-image`\n"
-                    messageText += "\nMessages that will be sent:\n\n"
-                    for(i in event.textPool){
+                    messageText += "\nMessages that will be sent:"
+                    if(event.textPool.length > 5){
+                        messageText += " (Page 1/" + Math.ceil(event.textPool.length/5) + ")\n\n"
+                    } else {
+                        messageText += "\n\n"
+                    }
+                    for(var x = (5 * session.session_data.messagesPage) - 4; x <= 5 * session.session_data.messagesPage; x++){
+                        i = (x-1)
                         let msg = event.textPool[i]
-                        messageText += "Message Slot #" +(parseInt(i)+1) + ": " + msg.text + "\n"
-                        if(msg.image){
-                            messageText += "[Image Link](" + msg.image+ ")" + "\n\n"
-                        } else {
-                            messageText += "\n"
+                        if(msg != undefined){
+                            messageText += "Message Slot #" +(parseInt(i)+1) + ": " + msg.text + "\n"
+                            if(msg.image){
+                                messageText += "[Image Link](" + msg.image+ ")" + "\n\n"
+                            } else {
+                                messageText += "\n"
+                            }
                         }
                     }
                 } else {

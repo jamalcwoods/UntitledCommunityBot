@@ -144,7 +144,6 @@ client.on('interactionCreate', async interaction => {
 
             const command = client.commands.get(interaction.commandName);
 
-            console.log("command: " + interaction.commandName)
             if (!command) return;
             try {
                 getServerDBData(interaction.guildId,function(serverData){
@@ -261,9 +260,13 @@ setInterval(() => {
                                         embed.setImage(msg.image)
                                     }
 
-        
+                                    let content = ""
+                                    if(server.custom[i].role){
+                                        content += "<@&" + server.custom[i].role + ">"
+                                    }
+
                                     channel.send({
-                                        content:" ",
+                                        content:content,
                                         embeds:[embed],
                                         ephemeral:false
                                     })
