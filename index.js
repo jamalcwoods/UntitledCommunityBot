@@ -250,6 +250,10 @@ setInterval(() => {
 
                                 let title = server.custom[i].title
                                 server.custom[i].fired = true
+                                let content = ""
+                                if(server.custom[i].role){
+                                    content += "<@&" + server.custom[i].role + ">"
+                                }
                                 client.channels.fetch(server.custom[i].channel).then(channel =>{
                                     const embed = new EmbedBuilder;
                                     embed.addFields(
@@ -258,11 +262,6 @@ setInterval(() => {
 
                                     if(msg.image != null){
                                         embed.setImage(msg.image)
-                                    }
-
-                                    let content = ""
-                                    if(server.custom[i].role){
-                                        content += "<@&" + server.custom[i].role + ">"
                                     }
 
                                     channel.send({
